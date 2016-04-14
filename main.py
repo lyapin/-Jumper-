@@ -16,7 +16,6 @@ SCREEN = pygame.display.set_mode(SIZE_SCREEN)
 pygame.display.set_caption("Doodle Jump")
 
 scene = Scene((WIDTH_SCREEN, HEIGHT_SCREEN)) # создаём сцену
-                           
 doodle = Doodle(512, 580)                    # создаём главного персонажа
 
 while True:
@@ -52,11 +51,26 @@ while True:
       scene.pulldown = False                     # останавливаем платформы
       doodle.freeze  = False                     # размораживаем doodle
       doodle.startpos[1] += deltamove            # перевычисляем местоположение doodle так, чтобы он сразу начинал падать
+      
+  if doodle.rect.y > HEIGHT_SCREEN: break
     
   ''' отрисовка объектов '''
   scene.Draw()                                   # рисуем объекты на сцене
   scene.blit(doodle.image, doodle.rect)          # рисуем главного героя на сцене
   SCREEN.blit(scene, scene.rect)                 # рисуем сцену поверх экрана
+  
+  pygame.display.update()
+  clock.tick(FPS)
+
+while True:
+  ''' конец игры '''
+  
+  ''' обработчик событий '''
+  for event in pygame.event.get():
+    if event.type == pygame.QUIT: pygame.quit(); sys.exit()
+    
+  theend = pygame.image.load(os.path.join("pics", "the_end.bmp"))
+  SCREEN.blit(theend, theend.get_rect())
   
   pygame.display.update()
   clock.tick(FPS)

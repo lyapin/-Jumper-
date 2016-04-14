@@ -7,9 +7,11 @@ class Doodle(pygame.sprite.Sprite):
   ''' класс для главного персонажа '''
   def __init__(self, x, y):
     ''' конструктор класса '''
-    self.image = pygame.image.load(os.path.join("pics", "doodle.png"))
+    self.image  = pygame.image.load(os.path.join("pics", "doodler.png"))
+    self.imager = self.image
+    self.imagel = pygame.image.load(os.path.join("pics", "doodlel.png")) 
     self.rect = self.image.get_rect()
-    self.mask = pygame.mask.from_surface(self.image)
+    #self.mask = pygame.mask.from_surface(self.image)
     self.rect.midbottom = x, y   # координаты середины нижнего основания doodle
     self.startpos       = [x, y] # позиция главного персонажа на сцене в момент отталкивания от платформы
     self.startspeedY    = 60     # начальная скорость по оси ординат
@@ -33,8 +35,12 @@ class Doodle(pygame.sprite.Sprite):
     
   def moveX(self, flagleft, flagright):
     ''' движение вдоль оси X '''
-    if flagleft:  self.rect = self.rect.move([-self.speedX, 0])
-    if flagright: self.rect = self.rect.move([self.speedX, 0])
+    if flagleft:
+      self.rect = self.rect.move([-self.speedX, 0])
+      self.image = self.imagel
+    if flagright:
+      self.rect = self.rect.move([self.speedX, 0])
+      self.image = self.imager
     
   def initjump(self, abstime, sled):
     ''' подготовка к прыжку '''
@@ -55,7 +61,13 @@ class Doodle(pygame.sprite.Sprite):
       self.belowmarkline = False
       return True
     return False
-      
+    
+class Monster(pygame.sprite.Sprite):
+  ''' класс для монcтра '''
+  def __init__(self, x, y):
+    self.image  = pygame.image.load(os.path.join("pics", "monster.png"))
+    self.rect = self.image.get_rect()
+    self.rect.midbottom = x, y
 
 class Sled(pygame.sprite.Sprite):
   ''' класс для платформы '''
@@ -71,9 +83,10 @@ class Scene(pygame.Surface):
   def __init__(self, size):
     pygame.Surface.__init__(self, size)
     self.rect           = self.get_rect()
-    self.numsleds       = 200   # количество платформ на сцене
+    self.numsleds       = 140   # количество платформ на сцене
     self.group_sleds    = []    # список, содержащий все платформы сцены
     self.pulldown       = False # флаг движения платформ вниз
+    self.background     = pygame.image.load(os.path.join("pics", "background.png")) # задний фон
     
     ''' генерация начальной группы платформ '''
     self.group_sleds.append(Sled(512, 580)) # первая платформа всегда на фиксированной позиции под doodle
@@ -85,7 +98,8 @@ class Scene(pygame.Surface):
   
   def Draw(self):
     ''' отрисовка объектов на сцене '''
-    self.fill(WHITE)
+    self.blit(self.background, self.background.get_rect())
+    #self.fill((255, 255, 255))
     #pygame.draw.line(self, (0, 0, 0), (0, 400), (WIDTH_SCREEN, 400), 1)
     for sled in self.group_sleds: self.blit(sled.image, sled.rect)
   
